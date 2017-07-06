@@ -20,18 +20,18 @@ namespace amMiddle.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost, Route("Create")]
         public IActionResult Create([FromBody] amModel item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
-
+                        
             _context.amModels.Add(item);
             _context.SaveChanges();
 
             return CreatedAtRoute("Responses", new { id = item.amModelId }, item);
-        }        
+        }
     }
 }
