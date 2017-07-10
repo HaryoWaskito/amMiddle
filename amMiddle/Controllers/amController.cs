@@ -26,9 +26,9 @@ namespace amMiddle.Controllers
             if (item == null)
                 return BadRequest();
 
-            _context.amModels.Add(item);
+            //_context.amModels.Add(item);
             //_context.SaveChanges();
-            _context.SaveData();
+            _context.SaveData(item);
 
             return CreatedAtRoute("Responses", new { id = item.amModelId }, item);
         }
