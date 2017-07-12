@@ -1,6 +1,7 @@
 ﻿using amMiddle.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,24 +17,24 @@ namespace amMiddle
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables()
+                ;
+
+            Configuration = builder.Build();
 
             using (var db = new amContext())
             {
                 db.Database.EnsureCreated();
                 db.Database.Migrate();
             }
-
-            Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<amContext>(opt => opt.UseInMemoryDatabase());
-            //services.AddDbContext<amContext>(opt => opt.UseSqlite(string.Empty));
             services.AddMvc();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddEntityFrameworkSqlite().AddDbContext<amContext>();
         }
 

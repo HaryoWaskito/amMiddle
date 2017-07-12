@@ -13,20 +13,25 @@ namespace amMiddle.Controllers
         {
             _context = context;
 
-            if (_context.amModels.Count() == 0)
+            if (_context.amModel.Count() == 0)
             {
-                _context.amModels.Add(new amModel());
+                _context.amModel.Add(new amModel());
                 _context.SaveChanges();
-            }
+            }            
         }
+
+
 
         [HttpPost, Route("Process")]
         public IActionResult Process([FromBody] amModel item)
         {
             if (item == null)
                 return BadRequest();
-                        
-            _context.CreateData(item);
+
+            using (var db = new amContext())
+            {
+                db.CreateData(item);
+            }            
 
             return CreatedAtRoute("Responses", new { id = item.amModelId }, item);
         }

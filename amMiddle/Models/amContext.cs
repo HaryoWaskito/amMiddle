@@ -3,31 +3,28 @@ using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 namespace amMiddle.Models
 {
     public class amContext : DbContext
     {
         private const string CONST_DATABASENAME = "amContext.db";
-
+                
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "amContext.db" };
-            var connectionString = connectionStringBuilder.ToString();
-            var connection = new SqliteConnection(connectionString);
-
-            optionsBuilder.UseSqlite(connection);
+            optionsBuilder.UseSqlite(String.Format("Filename=./{0}", CONST_DATABASENAME));
         }
-
-        public DbSet<amModel> amModels { get; set; }
+                
+        public DbSet<amModel> amModel { get; set; }
 
         public void CreateData(amModel item)
         {
             string insertQuery = string.Empty;
 
-            insertQuery = string.Format("INSERT INTO amModel ( amModelId, ApplicationName, KeyStrokeCount, MouseClickCount, StartTime, EndTime ) " +
-                                        "VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                                        item.amModelId, item.ApplicationName, item.KeyStrokeCount, item.MouseClickCount, item.StartTime, item.EndTime);
+            insertQuery = string.Format("INSERT INTO amModel ( amModelId, SessionID, ActivityName, ActivityType, KeyStrokeCount, MouseClickCount, StartTime, EndTime, IsSuccessSendToServer ) " +
+                                        "VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}')",
+                                        item.amModelId, item.SessionID, item.ActivityName, item.ActivityType, item.KeyStrokeCount, item.MouseClickCount, item.StartTime, item.EndTime, item.IsSuccessSendToServer);
 
             using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
             {
@@ -67,7 +64,9 @@ namespace amMiddle.Models
                         if (reader.Read())
                         {
                             recordData.amModelId = reader["amModelId"] != null ? reader["amModelId"].ToString() : string.Empty;
-                            recordData.ApplicationName = reader["ApplicationName"] != null ? reader["ApplicationName"].ToString() : string.Empty;
+                            recordData.SessionID = reader["SessionID"] != null ? int.Parse(reader["SessionID"].ToString()) : 0;
+                            recordData.ActivityName = reader["ActivityName"] != null ? reader["ActivityName"].ToString() : string.Empty;
+                            recordData.ActivityType = reader["ActivityType"] != null ? reader["ActivityType"].ToString() : string.Empty;
                             recordData.KeyStrokeCount = reader["KeyStrokeCount"] != null ? long.Parse(reader["KeyStrokeCount"].ToString()) : 0;
                             recordData.MouseClickCount = reader["MouseClickCount"] != null ? long.Parse(reader["MouseClickCount"].ToString()) : 0;
                             if (reader["StartTime"] != null && DateTime.TryParseExact(reader["StartTime"].ToString(), "yyyymmdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult))
@@ -148,8 +147,9 @@ namespace amMiddle.Models
                         if (reader.Read())
                         {
                             recordData.amModelId = reader["amModelId"] != null ? reader["amModelId"].ToString() : string.Empty;
-                            recordData.sessionID = reader["sessionID"] != null ? int.Parse(reader["sessionID"].ToString()) : 0;
-                            recordData.ApplicationName = reader["ApplicationName"] != null ? reader["ApplicationName"].ToString() : string.Empty;
+                            recordData.SessionID = reader["SessionID"] != null ? int.Parse(reader["SessionID"].ToString()) : 0;
+                            recordData.ActivityName = reader["ActivityName"] != null ? reader["ActivityName"].ToString() : string.Empty;
+                            recordData.ActivityType = reader["ActivityType"] != null ? reader["ActivityType"].ToString() : string.Empty;
                             recordData.KeyStrokeCount = reader["KeyStrokeCount"] != null ? long.Parse(reader["KeyStrokeCount"].ToString()) : 0;
                             recordData.MouseClickCount = reader["MouseClickCount"] != null ? long.Parse(reader["MouseClickCount"].ToString()) : 0;
                             if (reader["StartTime"] != null && DateTime.TryParseExact(reader["StartTime"].ToString(), "yyyymmdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult))
