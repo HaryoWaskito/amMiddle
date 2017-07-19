@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using System;
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace amMiddle
 {
@@ -12,16 +15,18 @@ namespace amMiddle
     {
         public static void Main(string[] args)
         {
+            string localHost = string.Format("http://localhost:{0}", GetOpenPort());
 
             var host = new WebHostBuilder()
                     .UseKestrel()
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseIISIntegration()
                     .UseStartup<Startup>()
-                    .UseUrls(string.Format(" http://localhost:{0}", GetOpenPort()))
+                    .UseUrls(localHost)
                     .UseApplicationInsights()
                     .Build();
-
+            //var testValue = host.ServerFeatures.Select(x => x.Value).ToList()[0];
+            //(((Microsoft.AspNetCore.Hosting.Server.Features.ServerAddressesFeature)testValue).Addresses).ToList().
             host.Run();
         }
 
@@ -43,7 +48,54 @@ namespace amMiddle
                     break;
                 }
             }
+
+            CreateFileTemp(EncryptString(unusedPort.ToString(), "Gu3G4nt3ngB4ng3t"));
+
             return unusedPort.ToString();
+        }
+
+        public static string EncryptString(string text, string keyString)
+        {
+            var key = Encoding.UTF8.GetBytes(keyString);
+
+            using (var aesAlg = Aes.Create())
+            {
+                using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
+                {
+                    using (var msEncrypt = new MemoryStream())
+                    {
+                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            swEncrypt.Write(text);
+                        }
+
+                        var iv = aesAlg.IV;
+
+                        var decryptedContent = msEncrypt.ToArray();
+
+                        var result = new byte[iv.Length + decryptedContent.Length];
+
+                        Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
+                        Buffer.BlockCopy(decryptedContent, 0, result, iv.Length, decryptedContent.Length);
+
+                        return Convert.ToBase64String(result);
+                    }
+                }
+            }
+        }
+
+        public static void CreateFileTemp(string encryptValue)
+        {
+            string path = @"C:\Temp\VivaLaVida.txt";
+            if (!File.Exists(path))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine(encryptValue);
+                }
+            }
         }
     }
 }
