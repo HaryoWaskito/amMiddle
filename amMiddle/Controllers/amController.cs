@@ -30,9 +30,6 @@ namespace amMiddle.Controllers
                 _context.amCapture.Add(new amCapture());
                 _context.SaveChanges();
             }
-
-
-
         }
 
         [HttpPost, Route("ProcessKeyLog")]

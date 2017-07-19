@@ -106,7 +106,7 @@ namespace amMiddle.Models
 
         public void DeleteDataSuccessSendToServer()
         {
-            string deleteQuery = "DELETE amModel WHERE item.IsSuccessSendToServer = 'True'";
+            string deleteQuery = "DELETE FROM amModel WHERE IsSuccessSendToServer = 'True'";
 
             using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
             {
@@ -168,7 +168,7 @@ namespace amMiddle.Models
 
         public void DeleteImageSuccessSendToServer()
         {
-            string deleteQuery = "DELETE amCapture WHERE item.IsSuccessSendToServer = 'True'";
+            string deleteQuery = "DELETE FROM amCapture WHERE IsSuccessSendToServer = 'True'";
 
             using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
             {
@@ -193,7 +193,7 @@ namespace amMiddle.Models
 
             insertQuery = string.Format("INSERT INTO amCapture ( amCaptureId, SessionID, ActivityName, ImageBtyeArrayString, CaptureScreenDate, IsSuccessSendToServer ) " +
                                         "VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                                        item.amCaptureId, item.SessionID, item.ActivityName, item.ImageBtyeArrayString, item.CaptureScreenDate, item.IsSuccessSendToServer);
+                                        item.amCaptureId, item.SessionID, item.ActivityName, item.Image, item.CaptureScreenDate, item.IsSuccessSendToServer);
 
             using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
             {
