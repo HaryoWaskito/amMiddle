@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
 
 namespace amMiddle.Models
 {
@@ -17,6 +15,7 @@ namespace amMiddle.Models
         }
 
         public DbSet<amModel> amModel { get; set; }
+        public DbSet<amCapture> amCapture { get; set; }
 
         public void CreateData(amModel item)
         {
@@ -82,7 +81,7 @@ namespace amMiddle.Models
         }
 
         public void UpdateData(amModel item)
-        {            
+        {
             string updateQuery = string.Empty;
 
             updateQuery = string.Format("UPDATE amModel SET KeyStrokeCount = '{0}', MouseClickCount = '{1}', StartTime = '{2}', EndTime = '{3}' " +
@@ -164,5 +163,53 @@ namespace amMiddle.Models
             }
             return result;
         }
+
+        // Image Capture Function
+
+        public void DeleteImageSuccessSendToServer()
+        {
+            string deleteQuery = "DELETE amCapture WHERE item.IsSuccessSendToServer = 'True'";
+
+            using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
+            {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var deleteCommand = connection.CreateCommand();
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.CommandText = deleteQuery;
+                    deleteCommand.CommandType = System.Data.CommandType.Text;
+                    deleteCommand.ExecuteNonQuery();
+
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public void SaveImageData(amCapture item)
+        {
+            string insertQuery = string.Empty;
+
+            insertQuery = string.Format("INSERT INTO amCapture ( amCaptureId, SessionID, ActivityName, ImageBtyeArrayString, CaptureScreenDate, IsSuccessSendToServer ) " +
+                                        "VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')",
+                                        item.amCaptureId, item.SessionID, item.ActivityName, item.ImageBtyeArrayString, item.CaptureScreenDate, item.IsSuccessSendToServer);
+
+            using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
+            {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var insertCommand = connection.CreateCommand();
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandText = insertQuery;
+                    insertCommand.CommandType = System.Data.CommandType.Text;
+                    insertCommand.ExecuteNonQuery();
+
+                    transaction.Commit();
+                }
+            }
+        }        
     }
 }

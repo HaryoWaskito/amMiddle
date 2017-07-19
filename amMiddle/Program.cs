@@ -96,6 +96,6 @@ namespace amMiddle
                     sw.WriteLine(encryptValue);
                 }
             }
-        }
+        }        
     }
 }
