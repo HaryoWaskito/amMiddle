@@ -49,19 +49,21 @@ namespace amMiddle.Controllers
         }
 
         [HttpPost, Route("ProcessCaptureImage")]
-        public IActionResult ProcessCaptureImage([FromBody] amCapture item)
+        public IActionResult ProcessCaptureImage([FromBody] List<amCapture> itemList)
         {
-            if (item == null)
+            if (itemList == null)
                 return BadRequest();
 
             using (var db = new amContext())
             {
                 db.DeleteImageSuccessSendToServer();
 
-                db.SaveImageData(item);
+                itemList.ForEach(item => db.SaveImageData(item));
             }
 
-            return CreatedAtRoute("SendScreenCapture", new { id = item.amCaptureId }, item);
+            //return Created("ProcessCaptureImage", new { id = itemList[0].amCaptureId });
+            return CreatedAtAction("SendScreenCapture", "amController", new { id = itemList[0].amCaptureId }, null);
+            //return CreatedAtRoute("SendScreenCapture", new { id = itemList[0].amCaptureId }, null);
         }
     }
 }

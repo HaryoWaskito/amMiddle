@@ -191,9 +191,9 @@ namespace amMiddle.Models
         {
             string insertQuery = string.Empty;
 
-            insertQuery = string.Format("INSERT INTO amCapture ( amCaptureId, SessionID, ActivityName, ImageBtyeArrayString, CaptureScreenDate, IsSuccessSendToServer ) " +
+            insertQuery = string.Format("INSERT INTO amCapture ( amCaptureId, SessionID, ActivityName, Image, CaptureScreenDate, IsSuccessSendToServer ) " +
                                         "VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')",
-                                        item.amCaptureId, item.SessionID, item.ActivityName, item.Image, item.CaptureScreenDate, item.IsSuccessSendToServer);
+                                        item.amCaptureId, item.SessionID, item.ActivityName, Convert.ToBase64String(item.Image), item.CaptureScreenDate, item.IsSuccessSendToServer);
 
             using (var connection = new SqliteConnection("" + new SqliteConnectionStringBuilder { DataSource = CONST_DATABASENAME }))
             {

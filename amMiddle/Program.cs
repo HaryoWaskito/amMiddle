@@ -88,14 +88,16 @@ namespace amMiddle
         public static void CreateFileTemp(string encryptValue)
         {
             string path = @"C:\Temp\VivaLaVida.txt";
+            Directory.CreateDirectory("C:\\Temp");
+
             if (!File.Exists(path))
-            {
+            {                
                 // Create a file to write to.
                 using (StreamWriter sw = File.CreateText(path))
                 {
                     sw.WriteLine(encryptValue);
                 }
-            }
+            }            
         }        
     }
 }
