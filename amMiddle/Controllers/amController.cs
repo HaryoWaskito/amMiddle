@@ -45,14 +45,14 @@ namespace amMiddle.Controllers
                 itemList.ForEach(item => db.CreateData(item));
             }
 
-            return CreatedAtRoute("SendMonitoringAsync", new { id = itemList[0].amModelId }, itemList);
+            return CreatedAtRoute("api/amController/ProcessKeyLog", new { id = itemList[0].amModelId }, itemList);
         }
 
         [HttpPost, Route("ProcessCaptureImage")]
         public IActionResult ProcessCaptureImage([FromBody] List<amCapture> itemList)
         {
             if (itemList == null)
-                return BadRequest();
+                return BadRequest(); ;
 
             using (var db = new amContext())
             {
@@ -61,9 +61,9 @@ namespace amMiddle.Controllers
                 itemList.ForEach(item => db.SaveImageData(item));
             }
 
-            //return Created("ProcessCaptureImage", new { id = itemList[0].amCaptureId });
-            return CreatedAtAction("SendScreenCapture", "amController", new { id = itemList[0].amCaptureId }, null);
-            //return CreatedAtRoute("SendScreenCapture", new { id = itemList[0].amCaptureId }, null);
+            return Ok();
+            //return Ok(itemList);
+            //return CreatedAtRoute("api/amController/ProcessCaptureImage", new { id = itemList[0].amCaptureId }, itemList);
         }
     }
 }

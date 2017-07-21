@@ -15,18 +15,20 @@ namespace amMiddle
     {
         public static void Main(string[] args)
         {
-            string localHost = string.Format("http://localhost:{0}", GetOpenPort());
+            //string localHost = string.Format("http://localhost:{0}", GetOpenPort());
 
             var host = new WebHostBuilder()
                     .UseKestrel()
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseIISIntegration()
                     .UseStartup<Startup>()
-                    .UseUrls(localHost)
+                    //.UseUrls(localHost)
                     .UseApplicationInsights()
                     .Build();
-            //var testValue = host.ServerFeatures.Select(x => x.Value).ToList()[0];
-            //(((Microsoft.AspNetCore.Hosting.Server.Features.ServerAddressesFeature)testValue).Addresses).ToList().
+
+            string localHost = (((Microsoft.AspNetCore.Hosting.Server.Features.ServerAddressesFeature)host.ServerFeatures.Select(x => x.Value).ToList()[0]).Addresses).ToList()[0];
+            CreateFileTemp(EncryptString(localHost.Split(':')[2], "Gu3G4nt3ngB4ng3t"));
+
             host.Run();
         }
 
@@ -91,13 +93,13 @@ namespace amMiddle
             Directory.CreateDirectory("C:\\Temp");
 
             if (!File.Exists(path))
-            {                
+            {
                 // Create a file to write to.
                 using (StreamWriter sw = File.CreateText(path))
                 {
                     sw.WriteLine(encryptValue);
                 }
-            }            
-        }        
+            }
+        }
     }
 }
