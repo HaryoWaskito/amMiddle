@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using System.Net;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace amMiddle
 {
@@ -15,48 +12,23 @@ namespace amMiddle
     {
         public static void Main(string[] args)
         {
-            //string localHost = string.Format("http://localhost:{0}", GetOpenPort());
-
             var host = new WebHostBuilder()
                     .UseKestrel()
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseIISIntegration()
                     .UseStartup<Startup>()
-                    //.UseUrls(localHost)
                     .UseApplicationInsights()
                     .Build();
 
             string localHost = (((Microsoft.AspNetCore.Hosting.Server.Features.ServerAddressesFeature)host.ServerFeatures.Select(x => x.Value).ToList()[0]).Addresses).ToList()[0];
-            CreateFileTemp(EncryptString(localHost.Split(':')[2], "Gu3G4nt3ngB4ng3t"));
+            CreateFileTemp(EncryptString(localHost.Split(':')[2], ENCRYPT_CODE));
 
             host.Run();
         }
 
-        private static string GetOpenPort()
-        {
-            int PortStartIndex = 1;
-            int PortEndIndex = 65535;
-            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] tcpEndPoints = properties.GetActiveTcpListeners();
+        #region Private Static Variables and Functions
 
-            List<int> usedPorts = tcpEndPoints.Select(p => p.Port).ToList<int>();
-            int unusedPort = 0;
-
-            for (int port = PortStartIndex; port < PortEndIndex; port++)
-            {
-                if (!usedPorts.Contains(port))
-                {
-                    unusedPort = port;
-                    break;
-                }
-            }
-
-            CreateFileTemp(EncryptString(unusedPort.ToString(), "Gu3G4nt3ngB4ng3t"));
-
-            return unusedPort.ToString();
-        }
-
-        public static string EncryptString(string text, string keyString)
+        private static string EncryptString(string text, string keyString)
         {
             var key = Encoding.UTF8.GetBytes(keyString);
 
@@ -87,7 +59,7 @@ namespace amMiddle
             }
         }
 
-        public static void CreateFileTemp(string encryptValue)
+        private static void CreateFileTemp(string encryptValue)
         {
             string path = @"C:\Temp\VivaLaVida.txt";
             Directory.CreateDirectory("C:\\Temp");
@@ -101,5 +73,9 @@ namespace amMiddle
                 }
             }
         }
+
+        private static string ENCRYPT_CODE = "Gu3G4nt3ngB4ng3t";
+        
+        #endregion
     }
 }
